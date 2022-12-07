@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Description;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,7 +23,9 @@ class FilmControllerTest {
 
     @BeforeEach
     public void setUp() {
-        this.controller = new FilmController();
+        FilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
+        FilmService filmService = new FilmService(inMemoryFilmStorage);
+        this.controller = new FilmController(filmService);
     }
 
     @Test

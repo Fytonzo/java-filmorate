@@ -9,6 +9,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class User {
@@ -21,6 +23,7 @@ public class User {
     private String name;
     @Past
     private LocalDate birthday;
+    private Set<Integer> friends = new HashSet<>();
 
     @JsonCreator
     public User(@JsonProperty("email") String email,
@@ -44,5 +47,13 @@ public class User {
         this.login = login;
         this.name = name;
         this.birthday = birthday;
+    }
+
+    public Set<Integer> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(HashSet<Integer> friends) {
+        this.friends = friends;
     }
 }

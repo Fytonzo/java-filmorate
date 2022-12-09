@@ -50,31 +50,6 @@ class FilmControllerTest {
     }
 
     @Test
-    @Description("Фильм с пустым названием")
-    @Tag("addFilm")
-    @Tag("getFilms")
-    public void addFilmWithEmptyNameTest() {
-        Film film = new Film("", "Description",
-                LocalDate.of(2020, 1, 1), 120);
-        assertThrows(ValidationException.class, () -> controller.addFilm(film),
-                "Не сработала валидация названия фильма");
-    }
-
-    @Test
-    @Description("Фильм с ооочень длинным описание")
-    @Tag("addFilm")
-    @Tag("getFilms")
-    public void addFilmWithVeryLongDescriptionTest() {
-        Film film = new Film("Name",
-                "DescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription" +
-                        "DescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription" +
-                        "DescriptionDescriptionDescription",
-                LocalDate.of(2020, 1, 1), 120);
-        assertThrows(ValidationException.class, () -> controller.addFilm(film),
-                "Не сработала валидация длины описания фильма");
-    }
-
-    @Test
     @Description("Фильм с описанием 200 символов")
     @Tag("addFilm")
     @Tag("getFilms")
@@ -109,20 +84,6 @@ class FilmControllerTest {
     }
 
     @Test
-    @Description("Фильм с описанием 201 символов")
-    @Tag("addFilm")
-    @Tag("Exception")
-    public void addFilmWith201SymbolsLongDescriptionTest() {
-        Film film = new Film("Name",
-                "iptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription" +
-                        "DescriptionDescriptionDescriptionDescriptionDescriptionDescriDescriptionDescriptionD" +
-                        "escriDescriptionDescriptionDescrip",
-                LocalDate.of(2020, 1, 1), 120);
-        assertThrows(ValidationException.class, () -> controller.addFilm(film),
-                "Не сработала валидация длины описания фильма");
-    }
-
-    @Test
     @Description("Фильм с неверной датой выпуска")
     @Tag("addFilm")
     @Tag("Exception")
@@ -131,17 +92,6 @@ class FilmControllerTest {
                 LocalDate.of(1800, 1, 1), 120);
         assertThrows(ValidationException.class, () -> controller.addFilm(film),
                 "Не сработала валидация даты фильма");
-    }
-
-    @Test
-    @Description("Фильм с отрицательной продолжительностью")
-    @Tag("addFilm")
-    @Tag("Exception")
-    public void addFilmWithNegativeDurationTest() {
-        Film film = new Film("Name", "Description",
-                LocalDate.of(2000, 1, 1), -120);
-        assertThrows(ValidationException.class, () -> controller.addFilm(film),
-                "Не сработала валидация продолжительности фильма");
     }
 
     @Test

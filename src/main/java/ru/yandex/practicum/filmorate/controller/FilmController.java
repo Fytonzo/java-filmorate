@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -12,7 +13,7 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
-    FilmService filmService;
+    private final FilmService filmService;
 
     public FilmController(FilmService filmService){
         this.filmService = filmService;
@@ -25,13 +26,13 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film addFilm(@RequestBody Film film) {
+    public Film addFilm(@Valid @RequestBody Film film) {
         log.info("Получен запрос на добавление фильма {}, валидирую...", film);
         return filmService.addFilm(film);
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         log.info("Получен запрос на обновление фильма с ID = {}", film.getId());
         return filmService.updateFilm(film);
     }
@@ -44,14 +45,14 @@ public class FilmController {
 
     @PutMapping("/{id}/like/{userId}")
     public void likeAdd(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId){
-        log.info("Пользователь {} поставил лайк фильму с ID = {}", userId, id);
         filmService.likeAdd(id, userId);
+        log.info("Пользователь {} поставил лайк фильму с ID = {}", userId, id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void likeRemove(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId){
-        log.info("Пользователь {} убрал лайк с фильма с ID = {}", userId, id);
         filmService.likeRemove(id, userId);
+        log.info("Пользователь {} убрал лайк с фильма с ID = {}", userId, id);
     }
 
     @GetMapping("/popular")

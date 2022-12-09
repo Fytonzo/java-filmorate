@@ -32,21 +32,9 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film film) {
-        if (film.getName().isBlank()) {
-            log.info("Не пройдна валидация названия. Название не может быть пустым!");
-            throw new ValidationException("Название не может быть пустым!");
-        }
-        if (film.getDescription().length() > 200) {
-            log.info("Не пройдна валидация описания. Описание должно быть не больше 200 символов!");
-            throw new ValidationException("Описание должно быть не больше 200 символов!");
-        }
         if (film.getReleaseDate().isBefore(FILMSTARTDATE)) {
             log.info("Не пройдна валидация даты выпуска фильма. Так рано фильмы не снимали!");
             throw new ValidationException("Так рано фильмы не снимали!");
-        }
-        if (film.getDuration() < 0) {
-            log.info("Не пройдна валидация продолжительности фильма. " + "Продолжительность фильма должна быть положительной!");
-            throw new ValidationException("Продолжительность фильма должна быть положительной!");
         }
         film.setId(generateId());
         films.put(film.getId(), film);

@@ -31,9 +31,9 @@ class UserControllerTest {
     @Tag("addUser")
     @Tag("getUsers")
     public void getUsersTest() {
-        User user1 = new User(1, "email@email.com", "login1", "name1",
+        User user1 = new User("email@email.com", "login1", "name1",
                 LocalDate.of(1980, 1, 1));
-        User user2 = new User(2, "emailemail@email1.com", "login2", "name2",
+        User user2 = new User("emailemail@email1.com", "login2", "name2",
                 LocalDate.of(1985, 1, 1));
         controller.addUser(user1);
         controller.addUser(user2);
@@ -47,7 +47,7 @@ class UserControllerTest {
     @Test
     @Description("Пользователь с пустым email")
     public void addUserWithEmptyEmailTest() {
-        User user = new User(1, "", "login1", "name1",
+        User user = new User("", "login1", "name1",
                 LocalDate.of(1980, 1, 1));
         assertThrows(ValidationException.class, () -> controller.addUser(user),
                 "Не сработала валидация email");
@@ -56,7 +56,7 @@ class UserControllerTest {
     @Test
     @Description("Пользователь с неверным email, без @")
     public void addUserWithWrongEmailTest() {
-        User user = new User(1, "email.com", "login1", "name1",
+        User user = new User("email.com", "login1", "name1",
                 LocalDate.of(1980, 1, 1));
         assertThrows(ValidationException.class, () -> controller.addUser(user),
                 "Не сработала валидация email");
@@ -65,7 +65,7 @@ class UserControllerTest {
     @Test
     @Description("Пользователь с пустым логином")
     public void addUserWithEmptyLoginTest() {
-        User user = new User(1, "email@email.com", "", "name1",
+        User user = new User("email@email.com", "", "name1",
                 LocalDate.of(1980, 1, 1));
         assertThrows(ValidationException.class, () -> controller.addUser(user),
                 "Не сработала валидация логина");
@@ -74,7 +74,7 @@ class UserControllerTest {
     @Test
     @Description("Пользователь с логином содержащим пробел")
     public void addUserWithWrongLoginTest() {
-        User user = new User(1, "email@email.com", "log in1", "name1",
+        User user = new User("email@email.com", "log in1", "name1",
                 LocalDate.of(1980, 1, 1));
         assertThrows(ValidationException.class, () -> controller.addUser(user),
                 "Не сработала валидация логина");
@@ -83,7 +83,7 @@ class UserControllerTest {
     @Test
     @Description("Пользователь с пустым именем")
     public void addUserWithEmptyNameTest() {
-        User user = new User(1, "email@email.com", "login1", "",
+        User user = new User("email@email.com", "login1", "",
                 LocalDate.of(1980, 1, 1));
         controller.addUser(user);
         List<User> savedUsers = controller.getUsers();
@@ -95,7 +95,7 @@ class UserControllerTest {
     @Test
     @Description("Пользователь с датой рождения в будущем")
     public void addUserWithWrongBirthDateTest() {
-        User user = new User(1, "email@email.com", "login1", "name1",
+        User user = new User("email@email.com", "login1", "name1",
                 LocalDate.of(2280, 1, 1));
         assertThrows(ValidationException.class, () -> controller.addUser(user),
                 "Не сработала валидация даты рождения");
@@ -104,7 +104,7 @@ class UserControllerTest {
     @Test
     @Description("Пользователь с текущей датой рождения")
     public void addUserWithNowBirthDateTest() {
-        User user = new User(1, "email@email.com", "login1", "name1",
+        User user = new User("email@email.com", "login1", "name1",
                 LocalDate.now());
         controller.addUser(user);
         List<User> savedUsers = controller.getUsers();

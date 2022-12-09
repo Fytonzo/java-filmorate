@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -20,27 +19,25 @@ public class UserService {
     }
 
 
-    public void addFriend(Integer idUser1, Integer idUser2){
-        Set<Integer> user1Friends = inMemoryUserStorage.getUser(idUser1).getFriends();
-        Set<Integer> user2Friends = inMemoryUserStorage.getUser(idUser2).getFriends();
-        user1Friends.add(idUser2);
-        user2Friends.add(idUser1);
-        inMemoryUserStorage.getUser(idUser1).setFriends((HashSet<Integer>) user1Friends);
-        inMemoryUserStorage.getUser(idUser2).setFriends((HashSet<Integer>) user2Friends);
+    public void addFriend(Integer userId1, Integer userId2){
+        User user1 = inMemoryUserStorage.getUser(userId1);
+        User user2 = inMemoryUserStorage.getUser(userId2);
+        user1.addFriend(userId2);
+        user2.addFriend(userId1);
     }
 
-    public void removeFriend(Integer idUser1, Integer idUser2){
-        Set<Integer> user1Friends = inMemoryUserStorage.getUser(idUser1).getFriends();
-        Set<Integer> user2Friends = inMemoryUserStorage.getUser(idUser2).getFriends();
-        user1Friends.remove(idUser2);
-        user2Friends.remove(idUser1);
-        inMemoryUserStorage.getUser(idUser1).setFriends((HashSet<Integer>) user1Friends);
-        inMemoryUserStorage.getUser(idUser2).setFriends((HashSet<Integer>) user2Friends);
+    public void removeFriend(Integer userId1, Integer userId2){
+        User user1 = inMemoryUserStorage.getUser(userId1);
+        User user2 = inMemoryUserStorage.getUser(userId2);
+        user1.removeFriend(userId2);
+        user2.removeFriend(userId1);
     }
 
-    public List<User> getCommonFriend(Integer idUser1, Integer idUser2){
-        Set<Integer> user1Friends = inMemoryUserStorage.getUser(idUser1).getFriends();
-        Set<Integer> user2Friends = inMemoryUserStorage.getUser(idUser2).getFriends();
+    public List<User> getCommonFriend(Integer userId1, Integer userId2){
+        User user1 = inMemoryUserStorage.getUser(userId1);
+        User user2 = inMemoryUserStorage.getUser(userId2);
+        Set<Integer> user1Friends = user1.getFriends();
+        Set<Integer> user2Friends = user2.getFriends();
         List<User> result = new ArrayList<>();
         for (Integer i : user1Friends){
             if (user2Friends.contains(i)){
@@ -66,8 +63,9 @@ public class UserService {
     }
 
     public List<User> getUserFriends(Integer id) {
+        User user = inMemoryUserStorage.getUser(id);
         List<User> userFriends = new ArrayList<>();
-        for (Integer userId : inMemoryUserStorage.getUser(id).getFriends()){
+        for (Integer userId : user.getFriends()){
             userFriends.add(inMemoryUserStorage.getUser(userId));
         }
         return userFriends;

@@ -5,13 +5,14 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService){
         this.userService = userService;
@@ -24,19 +25,18 @@ public class UserController {
     }
 
     @PostMapping
-    public User addUser(@RequestBody User user) {
+    public User addUser(@Valid @RequestBody User user) {
         log.info("Получен запрос на добавление пользователя {}, валидирую...", user);
         return userService.addUser(user);
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User user) {
+    public User updateUser(@Valid @RequestBody User user) {
         log.info("Получен запрос на обновление пользователя с ID = {}", user.getId());
         return userService.updateUser(user);
     }
 
     @GetMapping("/{id}")
-    @ResponseBody
     public User getUser(@PathVariable("id") Integer id){
         log.info("Получен запрос на получение пользователя с ID = {}", id);
         return userService.getUser(id);

@@ -2,70 +2,67 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
+import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private HashMap<Integer, Film> films = new HashMap<>();
-    private static final LocalDate FILMSTARTDATE = LocalDate.of(1895, 12, 28);
 
-    private static int id = 0;
+    private final FilmService filmService;
 
-    private Integer generateId(){
-        ++id;
-        return id;
+    public FilmController(FilmService filmService){
+        this.filmService = filmService;
     }
 
     @GetMapping
-    public ArrayList<Film> getFilms() {
+    public List<Film> getFilms() {
         log.info("Получен запрос на предоставление списка всех имеющихся фильмов");
-        return new ArrayList<>(films.values());
+        return filmService.getFilms();
     }
 
     @PostMapping
-    public Film addFilm(@RequestBody Film film) {
+    public Film addFilm(@Valid @RequestBody Film film) {
         log.info("Получен запрос на добавление фильма {}, валидирую...", film);
-        if (film.getName().isBlank()) {
-            log.info("Не пройдна валидация названия. Название не может быть пустым!");
-            throw new ValidationException("Название не может быть пустым!");
-        }
-        if (film.getDescription().length() > 200) {
-            log.info("Не пройдна валидация описания. Описание должно быть не больше 200 символов!");
-            throw new ValidationException("Описание должно быть не больше 200 символов!");
-        }
-        if (film.getReleaseDate().isBefore(FILMSTARTDATE)) {
-            log.info("Не пройдна валидация даты выпуска фильма. Так рано фильмы не снимали!");
-            throw new ValidationException("Так рано фильмы не снимали!");
-        }
-        if (film.getDuration() < 0) {
-            log.info("Не пройдна валидация продолжительности фильма. " +
-                    "Продолжительность фильма должна быть положительной!");
-            throw new ValidationException("Продолжительность фильма должна быть положительной!");
-        }
-        film.setId(generateId());
-        films.put(film.getId(), film);
-        log.info("Фильм успешно добавлен в список!");
-        return film;
+        return filmService.addFilm(film);
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         log.info("Получен запрос на обновление фильма с ID = {}", film.getId());
-        if (!films.containsKey(film.getId())) {
-            throw new ValidationException("Фильма с таким ID нет в списке");
-        } else {
-            log.info("Фильм с ID {}, успешно обновлён!", film.getId());
-            films.put(film.getId(), film);
-        }
-        return film;
+        return filmService.updateFilm(film);
     }
 
+    @GetMapping("/{id}")
+    public Film getFilm(@PathVariable("id") Integer id){
+        log.info("Получен запрос на фильм с ID = {}", id);
+        return filmService.getFilm(id);
+    }
 
+    @PutMapping("/{id}/like/{userId}")
+    public void likeAdd(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId){
+        filmService.likeAdd(id, userId);
+        log.info("Пользователь {} поставил лайк фильму с ID = {}", userId, id);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void likeRemove(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId){
+        filmService.likeRemove(id, userId);
+        log.info("Пользователь {} убрал лайк с фильма с ID = {}", userId, id);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getFilmsByPopularity(@RequestParam(required = false) Integer count){
+        if(count != null){
+            log.info("Получен запрос на предоставление самых популярных фильмов в количестве {}", count);
+            return filmService.getPopularFilms(count);
+        }else{
+            log.info("Получен запрос на предоставление 10 самых популярных фильмов");
+            return filmService.getPopularFilms(10);
+        }
+    }
 }

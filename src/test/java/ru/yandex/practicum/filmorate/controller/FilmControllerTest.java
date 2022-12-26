@@ -6,6 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Description;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,7 +25,10 @@ class FilmControllerTest {
 
     @BeforeEach
     public void setUp() {
-        this.controller = new FilmController();
+        FilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
+        UserStorage inMemoryUserStorage = new InMemoryUserStorage();
+        FilmService filmService = new FilmService(inMemoryFilmStorage, inMemoryUserStorage);
+        this.controller = new FilmController(filmService);
     }
 
     @Test
@@ -28,9 +36,9 @@ class FilmControllerTest {
     @Tag("addFilm")
     @Tag("getFilms")
     public void getFilmsTest() {
-        Film film1 = new Film(1, "Name", "Description",
+        Film film1 = new Film("Name", "Description",
                 LocalDate.of(2020, 1, 1), 120);
-        Film film2 = new Film(2, "NameName", "Description_Description",
+        Film film2 = new Film("NameName", "Description_Description",
                 LocalDate.of(2020, 12, 15), 110);
         controller.addFilm(film1);
         controller.addFilm(film2);
@@ -42,36 +50,11 @@ class FilmControllerTest {
     }
 
     @Test
-    @Description("Фильм с пустым названием")
-    @Tag("addFilm")
-    @Tag("getFilms")
-    public void addFilmWithEmptyNameTest() {
-        Film film = new Film(1, "", "Description",
-                LocalDate.of(2020, 1, 1), 120);
-        assertThrows(ValidationException.class, () -> controller.addFilm(film),
-                "Не сработала валидация названия фильма");
-    }
-
-    @Test
-    @Description("Фильм с ооочень длинным описание")
-    @Tag("addFilm")
-    @Tag("getFilms")
-    public void addFilmWithVeryLongDescriptionTest() {
-        Film film = new Film(1, "Name",
-                "DescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription" +
-                        "DescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription" +
-                        "DescriptionDescriptionDescription",
-                LocalDate.of(2020, 1, 1), 120);
-        assertThrows(ValidationException.class, () -> controller.addFilm(film),
-                "Не сработала валидация длины описания фильма");
-    }
-
-    @Test
     @Description("Фильм с описанием 200 символов")
     @Tag("addFilm")
     @Tag("getFilms")
     public void addFilmWith200SymbolsLongDescriptionTest() {
-        Film film = new Film(1, "Name",
+        Film film = new Film("Name",
                 "iptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription" +
                         "DescriptionDescriptionDescriptionDescriptionDescriptionDescriDescriptionDescriptionD" +
                         "escriDescriptionDescriptionDescri",
@@ -88,7 +71,7 @@ class FilmControllerTest {
     @Tag("addFilm")
     @Tag("getFilms")
     public void addFilmWith199SymbolsLongDescriptionTest() {
-        Film film = new Film(1, "Name",
+        Film film = new Film("Name",
                 "DescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription" +
                         "DescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription" +
                         "DescriptionDescrDescriptionDescrDescriptionDe",
@@ -101,39 +84,14 @@ class FilmControllerTest {
     }
 
     @Test
-    @Description("Фильм с описанием 201 символов")
-    @Tag("addFilm")
-    @Tag("Exception")
-    public void addFilmWith201SymbolsLongDescriptionTest() {
-        Film film = new Film(1, "Name",
-                "iptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription" +
-                        "DescriptionDescriptionDescriptionDescriptionDescriptionDescriDescriptionDescriptionD" +
-                        "escriDescriptionDescriptionDescrip",
-                LocalDate.of(2020, 1, 1), 120);
-        assertThrows(ValidationException.class, () -> controller.addFilm(film),
-                "Не сработала валидация длины описания фильма");
-    }
-
-    @Test
     @Description("Фильм с неверной датой выпуска")
     @Tag("addFilm")
     @Tag("Exception")
     public void addFilmWithEarlyReleaseDateTest() {
-        Film film = new Film(1, "Name", "Description",
+        Film film = new Film("Name", "Description",
                 LocalDate.of(1800, 1, 1), 120);
         assertThrows(ValidationException.class, () -> controller.addFilm(film),
                 "Не сработала валидация даты фильма");
-    }
-
-    @Test
-    @Description("Фильм с отрицательной продолжительностью")
-    @Tag("addFilm")
-    @Tag("Exception")
-    public void addFilmWithNegativeDurationTest() {
-        Film film = new Film(1, "Name", "Description",
-                LocalDate.of(2000, 1, 1), -120);
-        assertThrows(ValidationException.class, () -> controller.addFilm(film),
-                "Не сработала валидация продолжительности фильма");
     }
 
     @Test
@@ -141,7 +99,7 @@ class FilmControllerTest {
     @Tag("addFilm")
     @Tag("Exception")
     public void addFilmWithZeroDurationTest() {
-        Film film = new Film(1, "Name", "Description",
+        Film film = new Film("Name", "Description",
                 LocalDate.of(2000, 1, 1), 0);
         controller.addFilm(film);
         List<Film> savedFilms = controller.getFilms();

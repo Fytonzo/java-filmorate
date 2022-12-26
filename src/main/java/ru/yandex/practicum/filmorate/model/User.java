@@ -1,18 +1,17 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
-import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class User {
-    @Positive
     private int id;
     @Email
     private String email;
@@ -21,28 +20,32 @@ public class User {
     private String name;
     @Past
     private LocalDate birthday;
+    private Set<Integer> friends = new HashSet<>();
 
-    @JsonCreator
-    public User(@JsonProperty("email") String email,
-                @JsonProperty("login") String login,
-                @JsonProperty("name") String name,
-                @JsonProperty("birthday") LocalDate birthday) {
+    public User(String email, String login, String name, LocalDate birthday) {
         this.email = email;
         this.login = login;
         this.name = name;
         this.birthday = birthday;
     }
 
-    @JsonCreator
-    public User(@JsonProperty("id") int id,
-                @JsonProperty("email") String email,
-                @JsonProperty("login") String login,
-                @JsonProperty("name") String name,
-                @JsonProperty("birthday") LocalDate birthday) {
-        this.id = id;
-        this.email = email;
-        this.login = login;
-        this.name = name;
-        this.birthday = birthday;
+    public Set<Integer> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(Set<Integer> friends) {
+        this.friends = friends;
+    }
+
+    public void addFriend(Integer userId){
+        friends.add(userId);
+    }
+
+    public void removeFriend(Integer userId){
+        if(friends.contains(userId)){
+            friends.remove(userId);
+        }else{
+            throw new UserNotFoundException("Пользователя "+userId+" нет в друзьях у пользователя "+this.id+"!");
+        }
     }
 }

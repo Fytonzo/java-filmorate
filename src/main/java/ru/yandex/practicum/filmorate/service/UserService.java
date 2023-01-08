@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -11,63 +12,50 @@ import java.util.Set;
 
 @Service
 public class UserService {
-    private final UserStorage inMemoryUserStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage inMemoryUserStorage){
-        this.inMemoryUserStorage = inMemoryUserStorage;
+    public UserService(@Qualifier("userDBStorage") UserStorage userStorage){
+        this.userStorage = userStorage;
     }
 
 
     public void addFriend(Integer userId1, Integer userId2){
-        User user1 = inMemoryUserStorage.getUser(userId1);
-        User user2 = inMemoryUserStorage.getUser(userId2);
-        user1.addFriend(userId2);
-        user2.addFriend(userId1);
+        userStorage.addFriend(userId1, userId2);
     }
 
     public void removeFriend(Integer userId1, Integer userId2){
-        User user1 = inMemoryUserStorage.getUser(userId1);
-        User user2 = inMemoryUserStorage.getUser(userId2);
-        user1.removeFriend(userId2);
-        user2.removeFriend(userId1);
+        userStorage.removeFriend(userId1, userId2);
     }
 
     public List<User> getCommonFriend(Integer userId1, Integer userId2){
-        User user1 = inMemoryUserStorage.getUser(userId1);
-        User user2 = inMemoryUserStorage.getUser(userId2);
-        Set<Integer> user1Friends = user1.getFriends();
-        Set<Integer> user2Friends = user2.getFriends();
-        List<User> result = new ArrayList<>();
-        for (Integer i : user1Friends){
-            if (user2Friends.contains(i)){
-                result.add(inMemoryUserStorage.getUser(i));
+        List<User> commonFriends = new ArrayList<>();
+        List<User> user1Friends = userStorage.getUserFriends(userId1);
+        List<User> user2Friends = userStorage.getUserFriends(userId2);
+        for(User user : user1Friends){
+            if(user2Friends.contains(user)){
+                commonFriends.add(user);
             }
         }
-        return result;
+        return commonFriends;
     }
 
     public User getUser(Integer id){
-        return inMemoryUserStorage.getUser(id);
+        return userStorage.getUser(id);
     }
     public List<User> getUsers() {
-        return inMemoryUserStorage.getUsers();
+        return userStorage.getUsers();
     }
 
     public User addUser(User user) {
-        return inMemoryUserStorage.addUser(user);
+        return userStorage.addUser(user);
     }
 
     public User updateUser(User user) {
-        return inMemoryUserStorage.updateUser(user);
+        return userStorage.updateUser(user);
     }
 
     public List<User> getUserFriends(Integer id) {
-        User user = inMemoryUserStorage.getUser(id);
-        List<User> userFriends = new ArrayList<>();
-        for (Integer userId : user.getFriends()){
-            userFriends.add(inMemoryUserStorage.getUser(userId));
-        }
-        return userFriends;
+        return userStorage.getUserFriends(id);
     }
 }

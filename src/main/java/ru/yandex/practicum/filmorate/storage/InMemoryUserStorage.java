@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -57,5 +58,20 @@ public class InMemoryUserStorage implements UserStorage{
         }else{
             throw new UserNotFoundException("Пользователь с id "+ id + " не найден!");
         }
+    }
+
+    @Override
+    public List<User> getUserFriends(Integer id) {
+        return null;
+    }
+
+    @Override
+    public void addFriend(Integer userId, Integer friendId) {
+
+    }
+
+    @Override
+    public void removeFriend(Integer userId, Integer friendId) {
+
     }
 }

@@ -23,6 +23,8 @@ public class Film {
     @Positive
     private int duration;
     private Set<Long> likes = new HashSet<>();
+    private Set<Genre> genres = new HashSet<>();
+    private Mpa mpa;
 
     public Film(String name, String description, LocalDate releaseDate, int duration) {
         this.name = name;
@@ -54,5 +56,9 @@ public class Film {
             throw new UserNotFoundException("Лайк от пользователя "+userId+" этому фильму и так не был поставлен, " +
                     "удалять нечего");
         }
+    }
+
+    public void addGenre(Genre genre){
+        genres.add(genre);
     }
 }

@@ -9,7 +9,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -24,8 +23,8 @@ public class Film {
     @Positive
     private int duration;
     private Set<Long> likes = new HashSet<>();
-    private List<String> genres;
-    private String rating;
+    private Set<Genre> genres = new HashSet<>();
+    private Mpa mpa;
 
     public Film(String name, String description, LocalDate releaseDate, int duration) {
         this.name = name;
@@ -57,5 +56,9 @@ public class Film {
             throw new UserNotFoundException("Лайк от пользователя "+userId+" этому фильму и так не был поставлен, " +
                     "удалять нечего");
         }
+    }
+
+    public void addGenre(Genre genre){
+        genres.add(genre);
     }
 }

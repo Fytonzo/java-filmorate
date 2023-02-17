@@ -16,6 +16,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -66,7 +67,7 @@ public class FilmDbStorageTest {
     @Description("Добавление/получение фильмов")
     @Tag("insert")
     @Tag("select")
-    public void updateFilmTest() {
+    public void updateFilmTest() throws SQLException {
         Film film1 = new Film("firstFilm", "Description",
                 LocalDate.of(2020, 1, 1), 120);
         film1.addGenre(filmDbStorage.getGenreById(1));
@@ -85,7 +86,7 @@ public class FilmDbStorageTest {
     @Description("Добавление/получение фильма")
     @Tag("insert")
     @Tag("select")
-    public void getFilmTest() {
+    public void getFilmTest() throws SQLException {
         Film film1 = new Film("firstFilm", "Description",
                 LocalDate.of(2020, 1, 1), 120);
         film1.addGenre(filmDbStorage.getGenreById(1));

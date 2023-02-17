@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -30,7 +31,7 @@ class UserControllerTest {
     @Description("Добавление и получение списка пользователей")
     @Tag("addUser")
     @Tag("getUsers")
-    public void getUsersTest() {
+    public void getUsersTest() throws SQLException {
         User user1 = new User("email@email.com", "login1", "name1",
                 LocalDate.of(1980, 1, 1));
         User user2 = new User("emailemail@email1.com", "login2", "name2",
@@ -46,7 +47,7 @@ class UserControllerTest {
 
     @Test
     @Description("Пользователь с пустым именем")
-    public void addUserWithEmptyNameTest() {
+    public void addUserWithEmptyNameTest() throws SQLException {
         User user = new User("email@email.com", "login1", "",
                 LocalDate.of(1980, 1, 1));
         controller.addUser(user);
@@ -58,7 +59,7 @@ class UserControllerTest {
 
     @Test
     @Description("Пользователь с текущей датой рождения")
-    public void addUserWithNowBirthDateTest() {
+    public void addUserWithNowBirthDateTest() throws SQLException {
         User user = new User("email@email.com", "login1", "name1",
                 LocalDate.now());
         controller.addUser(user);

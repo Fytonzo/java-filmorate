@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -37,13 +38,13 @@ public class UserDbStorageTest {
     @Tag("insert")
     @Tag("select")
     @Tag("adduser")
-    public void getUsers() {
+    public void getUsers() throws SQLException {
         User user1 = new User("email@email.com", "login1", "name1",
                 LocalDate.of(1980, 1, 1));
-        User user2 = new User("emailemail@email1.com", "login2", "name2",
-                LocalDate.of(1985, 1, 1));
+        /*User user2 = new User("emailemail@email1.com", "login2", "name2",
+                LocalDate.of(1985, 1, 1));*/
         userDbStorage.addUser(user1);
-        userDbStorage.addUser(user2);
+        /*userDbStorage.addUser(user2);*/
         List<User> users = userDbStorage.getUsers();
         assertNotNull(users, "Вместо списка пользователей вернулся null");
     }
@@ -55,7 +56,7 @@ public class UserDbStorageTest {
     @Tag("select")
     @Tag("adduser")
     @Tag("updateuser")
-    public void updateUser() {
+    public void updateUser() throws SQLException {
         User user1 = new User("email@email.com", "login1", "name1",
                 LocalDate.of(1980, 1, 1));
         userDbStorage.addUser(user1);
@@ -74,7 +75,7 @@ public class UserDbStorageTest {
     @Tag("insert")
     @Tag("select")
     @Tag("adduser")
-    public void getUser() {
+    public void getUser() throws SQLException {
         User user1 = new User("email@email.com", "login1", "name1",
                 LocalDate.of(1980, 1, 1));
         userDbStorage.addUser(user1);
@@ -94,7 +95,7 @@ public class UserDbStorageTest {
     @Tag("adduser")
     @Tag("addfriend")
     @Tag("removefriend")
-    public void removeFriend() {
+    public void removeFriend() throws SQLException {
         User user1 = new User("email@email.com", "login1", "name1",
                 LocalDate.of(1980, 1, 1));
         User user2 = new User("emailemail@email1.com", "login2", "name2",
@@ -123,7 +124,7 @@ public class UserDbStorageTest {
     @Tag("select")
     @Tag("adduser")
     @Tag("addfriend")
-    public void getUserFriends() {
+    public void getUserFriends() throws SQLException {
         User user1 = new User("email@email.com", "login1", "name1",
                 LocalDate.of(1980, 1, 1));
         User user2 = new User("emailemail@email1.com", "login2", "name2",

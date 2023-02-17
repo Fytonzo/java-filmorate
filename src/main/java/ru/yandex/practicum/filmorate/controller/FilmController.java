@@ -3,11 +3,10 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
+import java.sql.SQLException;
 import java.util.List;
 
 @Slf4j
@@ -17,7 +16,7 @@ public class FilmController {
 
     private final FilmService filmService;
 
-    public FilmController(FilmService filmService){
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 
@@ -40,29 +39,29 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getFilm(@PathVariable("id") Integer id){
+    public Film getFilm(@PathVariable("id") Integer id) throws SQLException {
         log.info("Получен запрос на фильм с ID = {}", id);
         return filmService.getFilm(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void likeAdd(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId){
+    public void likeAdd(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId) {
         filmService.likeAdd(id, userId);
         log.info("Пользователь {} поставил лайк фильму с ID = {}", userId, id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void likeRemove(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId){
+    public void likeRemove(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId) {
         filmService.likeRemove(id, userId);
         log.info("Пользователь {} убрал лайк с фильма с ID = {}", userId, id);
     }
 
     @GetMapping("/popular")
-    public List<Film> getFilmsByPopularity(@RequestParam(required = false) Integer count){
-        if(count != null){
+    public List<Film> getFilmsByPopularity(@RequestParam(required = false) Integer count) {
+        if (count != null) {
             log.info("Получен запрос на предоставление самых популярных фильмов в количестве {}", count);
             return filmService.getPopularFilms(count);
-        }else{
+        } else {
             log.info("Получен запрос на предоставление 10 самых популярных фильмов");
             return filmService.getPopularFilms(10);
         }

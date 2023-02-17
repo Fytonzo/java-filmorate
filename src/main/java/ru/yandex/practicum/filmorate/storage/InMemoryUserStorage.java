@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class InMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
 
     private static int id = 0;
@@ -30,7 +30,7 @@ public class InMemoryUserStorage implements UserStorage{
 
     @Override
     public User addUser(User user) {
-        if ((user.getName()==null)||(user.getName().isBlank())) {
+        if ((user.getName() == null) || (user.getName().isBlank())) {
             log.info("Поле \"Имя\" пустое, ему будет присвоено значение поля \"Логин\"");
             user.setName(user.getLogin());
         }
@@ -52,11 +52,11 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     @Override
-    public User getUser(Integer id){
-        if (users.containsKey(id)){
+    public User getUser(Integer id) {
+        if (users.containsKey(id)) {
             return users.get(id);
-        }else{
-            throw new UserNotFoundException("Пользователь с id "+ id + " не найден!");
+        } else {
+            throw new UserNotFoundException("Пользователь с id " + id + " не найден!");
         }
     }
 
@@ -74,4 +74,12 @@ public class InMemoryUserStorage implements UserStorage{
     public void removeFriend(Integer userId, Integer friendId) {
 
     }
+
+    @Override
+    public boolean checkUserInDb(Integer userId) {
+        return false;
+    }
+
+    @Override
+    public List<User> getCommonFriends(Integer userId1, Integer userId2){return null;}
 }

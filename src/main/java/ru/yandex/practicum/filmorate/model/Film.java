@@ -13,10 +13,10 @@ import java.util.Set;
 
 @Data
 public class Film {
-    private int id = 0;
+    private int id;
     @NotBlank
     private String name;
-    @Length(max=200)
+    @Length(max = 200)
     private String description;
     @NotNull
     private LocalDate releaseDate;
@@ -41,24 +41,24 @@ public class Film {
         this.likes = likes;
     }
 
-    public Integer popularity(){
+    public Integer popularity() {
         return likes.size();
     }
 
-    public void addLIke(Integer userId){
+    public void addLIke(Integer userId) {
         likes.add((long) userId);
     }
 
-    public void removeLike(Integer userId){
-        if (likes.contains((long) userId)){
+    public void removeLike(Integer userId) {
+        if (likes.contains((long) userId)) {
             likes.remove((long) userId);
-        }else{
-            throw new UserNotFoundException("Лайк от пользователя "+userId+" этому фильму и так не был поставлен, " +
+        } else {
+            throw new UserNotFoundException("Лайк от пользователя " + userId + " этому фильму и так не был поставлен, " +
                     "удалять нечего");
         }
     }
 
-    public void addGenre(Genre genre){
+    public void addGenre(Genre genre) {
         genres.add(genre);
     }
 }

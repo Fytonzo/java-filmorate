@@ -103,4 +103,19 @@ public class InMemoryFilmStorage implements FilmStorage {
     public void likeRemove(Integer filmId, Integer userId) {
 
     }
+
+    @Override
+    public boolean checkFilmInDb(Integer filmId) {
+        return false;
+    }
+
+    @Override
+    public boolean checkMpaInDb(Integer mpaId) {
+        return false;
+    }
+
+    @Override
+    public boolean checkGenreInDb(Integer genreId) {
+        return false;
+    }
 }

@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface FilmStorage {
 
-    Integer generateId();
-
     List<Film> getFilms();
 
     Film addFilm(Film film);

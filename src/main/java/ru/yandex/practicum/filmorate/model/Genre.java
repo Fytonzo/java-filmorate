@@ -1,18 +1,17 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 
-@Data
+@AllArgsConstructor
+@Getter
+@Setter
 public class Genre {
     private Integer id;
     private String name;
-
-    public Genre(Integer id, String name) {
-        this.id = id;
-        this.name = name;
-    }
 
     @Override
     public boolean equals(Object o) {

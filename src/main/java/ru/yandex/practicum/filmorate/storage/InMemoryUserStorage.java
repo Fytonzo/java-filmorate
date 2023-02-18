@@ -2,23 +2,19 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
-@Component
+@Component("userMemoryStorage")
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
 
     private static int id = 0;
 
-    @Override
-    public Integer generateId() {
+    private Integer generateId() {
         ++id;
         return id;
     }
@@ -43,7 +39,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User updateUser(User user) {
         if (!users.containsKey(user.getId())) {
             log.info("Пользователя с таким ID нет в списке");
-            throw new UserNotFoundException("Пользователя с таким ID нет в списке");
+            throw new EntityNotFoundException("Пользователя с таким ID нет в списке");
         } else {
             log.info("Пользователь с ID={}", user.getId());
             users.put(user.getId(), user);
@@ -56,13 +52,18 @@ public class InMemoryUserStorage implements UserStorage {
         if (users.containsKey(id)) {
             return users.get(id);
         } else {
-            throw new UserNotFoundException("Пользователь с id " + id + " не найден!");
+            throw new EntityNotFoundException("Пользователь с id " + id + " не найден!");
         }
     }
 
     @Override
     public List<User> getUserFriends(Integer id) {
-        return null;
+        List<User> result = new ArrayList<>();
+        Set<Integer> userFriends = getUser(id).getFriends();
+        for (Integer friendId : userFriends) {
+            result.add(getUser(friendId));
+        }
+        return result;
     }
 
     @Override
@@ -77,9 +78,23 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public boolean checkUserInDb(Integer userId) {
-        return false;
+        if (users.containsKey(userId)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
-    public List<User> getCommonFriends(Integer userId1, Integer userId2){return null;}
+    public List<User> getCommonFriends(Integer userId1, Integer userId2) {
+        List<User> commonFriends = new ArrayList<>();
+        List<User> user1Friends = this.getUserFriends(userId1);
+        List<User> user2Friends = this.getUserFriends(userId2);
+        for (User user : user1Friends) {
+            if (user2Friends.contains(user)) {
+                commonFriends.add(user);
+            }
+        }
+        return commonFriends;
+    }
 }

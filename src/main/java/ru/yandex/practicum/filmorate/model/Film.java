@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -53,8 +53,8 @@ public class Film {
         if (likes.contains((long) userId)) {
             likes.remove((long) userId);
         } else {
-            throw new UserNotFoundException("Лайк от пользователя " + userId + " этому фильму и так не был поставлен, " +
-                    "удалять нечего");
+            throw new EntityNotFoundException("Лайк от пользователя " + userId + " этому фильму и " +
+                    "так не был поставлен, удалять нечего");
         }
     }
 

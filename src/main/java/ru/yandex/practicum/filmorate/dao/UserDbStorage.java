@@ -4,12 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,22 +21,18 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Integer generateId() {
-        return null;
-    }
-
-    @Override
-    public List<User> getUsers() throws SQLException {
+    public List<User> getUsers() {
         String sql = "SELECT u.*, f.friend_id FROM users AS u LEFT JOIN friendship AS f on u.id = f.user_id";
         List<User> result = new ArrayList<>();
         SqlRowSet users = jdbcTemplate.queryForRowSet(sql);
-        while (users.next()){
+        while (users.next()) {
             result.add(makeUser(users));
         }
         users.beforeFirst();
-        for (User user: result) {
-            while (users.next()){
-                if (user.getId() == users.getInt("id")){
+        for (User user : result) {
+            users.beforeFirst();
+            while (users.next()) {
+                if (user.getId() == users.getInt("id")) {
                     user.addFriend(users.getInt("friend_id"));
                 }
             }
@@ -77,7 +71,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User getUser(Integer id) throws SQLException {
+    public User getUser(Integer id) {
         String sql = "SELECT * FROM users WHERE id=" + id;
         SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql);
         if (userRows.next()) {
@@ -119,7 +113,7 @@ public class UserDbStorage implements UserStorage {
         }
     }
 
-    public List<User> getUserFriends(Integer userId) throws SQLException {
+    public List<User> getUserFriends(Integer userId) {
         List<User> result = new ArrayList<>();
         SqlRowSet listOfFriends = jdbcTemplate.queryForRowSet("SELECT friend_id FROM friendship WHERE user_id=?",
                 userId);
@@ -130,7 +124,7 @@ public class UserDbStorage implements UserStorage {
 
     }
 
-    private User makeUser(SqlRowSet rs) throws SQLException {
+    private User makeUser(SqlRowSet rs) {
         User user = new User(rs.getString("email"),
                 rs.getString("login"),
                 rs.getString("name"),
@@ -149,18 +143,18 @@ public class UserDbStorage implements UserStorage {
         if (ids.contains(id)) {
             return true;
         } else {
-            throw new UserNotFoundException("Пользователя с таким id нет в базе!");
+            throw new EntityNotFoundException("Пользователя с таким id нет в базе!");
         }
 
     }
 
-    public List<User> getCommonFriends(Integer user1Id, Integer user2Id) throws SQLException {
+    public List<User> getCommonFriends(Integer user1Id, Integer user2Id) {
         String sql = "SELECT fr1.friend_id FROM friendship fr1 " +
                 "INNER JOIN friendship fr2 ON fr1.friend_id = fr2.friend_id " +
                 "WHERE fr1.user_id = ? AND fr2.user_id = ?";
         List<User> result = new ArrayList<>();
         SqlRowSet commonFriends = jdbcTemplate.queryForRowSet(sql, user1Id, user2Id);
-        while (commonFriends.next()){
+        while (commonFriends.next()) {
             result.add(getUser(commonFriends.getInt("friend_id")));
         }
         return result;

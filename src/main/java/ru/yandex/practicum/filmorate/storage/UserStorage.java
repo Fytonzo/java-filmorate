@@ -7,8 +7,6 @@ import java.util.List;
 
 public interface UserStorage {
 
-    Integer generateId();
-
     List<User> getUsers() throws SQLException;
 
     User addUser(User user);

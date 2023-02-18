@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -13,16 +13,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component("inMemoryFilmStorage")
+@Component("filmMemoryStorage")
 public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Integer, Film> films = new HashMap<>();
-    private static final LocalDate FILMSTARTDATE = LocalDate.of(1895, 12, 28);
+    private final Map<Integer, Mpa> mpas = new HashMap<>();
+    private final Map<Integer, Genre> genres = new HashMap<>();
+    private static final LocalDate FILM_STARTDATE = LocalDate.of(1895, 12, 28);
 
     private static int id = 0;
 
-    @Override
-    public Integer generateId() {
+    private Integer generateId() {
         ++id;
         return id;
     }
@@ -34,7 +35,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film film) {
-        if (film.getReleaseDate().isBefore(FILMSTARTDATE)) {
+        if (film.getReleaseDate().isBefore(FILM_STARTDATE)) {
             log.info("Не пройдна валидация даты выпуска фильма. Так рано фильмы не снимали!");
             throw new ValidationException("Так рано фильмы не снимали!");
         }
@@ -47,7 +48,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film film) {
         if (!films.containsKey(film.getId())) {
-            throw new FilmNotFoundException("Фильма с таким ID нет в списке");
+            throw new EntityNotFoundException("Фильма с таким ID нет в списке");
         } else {
             log.info("Фильм с ID {}, успешно обновлён!", film.getId());
             films.put(film.getId(), film);
@@ -60,7 +61,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (films.containsKey(id)) {
             return films.get(id);
         } else {
-            throw new FilmNotFoundException("Фильма с таким id нет!");
+            throw new EntityNotFoundException("Фильма с таким id нет!");
         }
     }
 
@@ -76,46 +77,58 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Genre> getAllGenres() {
-        return null;
+        return new ArrayList<>(genres.values());
     }
 
     @Override
     public Genre getGenreById(int id) {
-        return null;
+        return genres.get(id);
     }
 
     @Override
     public List<Mpa> getAllMpa() {
-        return null;
+        return new ArrayList<>(mpas.values());
     }
 
     @Override
     public Mpa getMpaById(int id) {
-        return null;
+        return mpas.get(id);
     }
 
     @Override
     public void likeAdd(Integer filmId, Integer userId) {
-
+        films.get(filmId).addLIke(userId);
     }
 
     @Override
     public void likeRemove(Integer filmId, Integer userId) {
-
+        films.get(filmId).removeLike(userId);
     }
 
     @Override
     public boolean checkFilmInDb(Integer filmId) {
-        return false;
+        if (films.containsKey(filmId)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean checkMpaInDb(Integer mpaId) {
-        return false;
+        if (mpas.containsKey(mpaId)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean checkGenreInDb(Integer genreId) {
-        return false;
+        if (genres.containsKey(genreId)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -32,17 +31,32 @@ public class UserService {
         userStorage.removeFriend(userId1, userId2);
     }
 
-    public List<User> getCommonFriend(Integer userId1, Integer userId2) throws SQLException {
-        return userStorage.getCommonFriends(userId1, userId2);
+    public List<User> getCommonFriend(Integer userId1, Integer userId2) {
+        try {
+            return userStorage.getCommonFriends(userId1, userId2);
+        } catch (SQLException e) {
+            log.error("Ошибка в сервисном методе получения общих друзей: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
-    public User getUser(Integer id) throws SQLException {
+    public User getUser(Integer id) {
         userStorage.checkUserInDb(id);
-        return userStorage.getUser(id);
+        try {
+            return userStorage.getUser(id);
+        } catch (SQLException e) {
+            log.error("Ошибка в сервисном методе получения пользователя по id: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
-    public List<User> getUsers() throws SQLException {
-        return userStorage.getUsers();
+    public List<User> getUsers() {
+        try {
+            return userStorage.getUsers();
+        } catch (SQLException e) {
+            log.error("Ошибка в сервисном методе получения списка всех пользователей: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     public User addUser(User user) {
@@ -58,8 +72,13 @@ public class UserService {
         return userStorage.updateUser(user);
     }
 
-    public List<User> getUserFriends(Integer id) throws SQLException {
+    public List<User> getUserFriends(Integer id) {
         userStorage.checkUserInDb(id);
-        return userStorage.getUserFriends(id);
+        try {
+            return userStorage.getUserFriends(id);
+        } catch (SQLException e) {
+            log.error("Ошибка в сервисном методе получения друзей пользователя по id: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 }

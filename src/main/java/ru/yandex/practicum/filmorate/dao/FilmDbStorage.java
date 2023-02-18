@@ -5,9 +5,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
-import ru.yandex.practicum.filmorate.exception.MpaNotFoundException;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -22,17 +20,12 @@ import java.util.List;
 @Component("filmDBStorage")
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-    private static final String SQLGENRES = "SELECT fg.film_id, g.id, g.genre_name FROM film_genre AS fg " +
+    private static final String SQL_GENRES = "SELECT fg.film_id, g.id, g.genre_name FROM film_genre AS fg " +
             "LEFT JOIN genre AS g ON fg.genre_id=g.id";
-    private static final String SQLLIKES = "SELECT * FROM film_likes";
+    private static final String SQL_LIKES = "SELECT * FROM film_likes";
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @Override
-    public Integer generateId() {
-        return null;
     }
 
     @Override
@@ -220,7 +213,7 @@ public class FilmDbStorage implements FilmStorage {
         if (ids.contains(id)) {
             return true;
         } else {
-            throw new FilmNotFoundException("Фильма с таким id нет в базе!");
+            throw new EntityNotFoundException("Фильма с таким id нет в базе!");
         }
     }
 
@@ -234,7 +227,7 @@ public class FilmDbStorage implements FilmStorage {
         if (ids.contains(id)) {
             return true;
         } else {
-            throw new MpaNotFoundException("Рейтинга с таким id нет в базе!");
+            throw new EntityNotFoundException("Рейтинга с таким id нет в базе!");
         }
     }
 
@@ -248,7 +241,7 @@ public class FilmDbStorage implements FilmStorage {
         if (ids.contains(id)) {
             return true;
         } else {
-            throw new GenreNotFoundException("Жанра с таким id нет в базе!");
+            throw new EntityNotFoundException("Жанра с таким id нет в базе!");
         }
     }
 
@@ -261,8 +254,8 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private List<Film> addGenresAndLikes(List<Film> films) {
-        SqlRowSet genres = jdbcTemplate.queryForRowSet(SQLGENRES);
-        SqlRowSet likes = jdbcTemplate.queryForRowSet(SQLLIKES);
+        SqlRowSet genres = jdbcTemplate.queryForRowSet(SQL_GENRES);
+        SqlRowSet likes = jdbcTemplate.queryForRowSet(SQL_LIKES);
         for (Film film : films) {
             while (genres.next()) {
                 if (film.getId() == genres.getInt("film_id")) {

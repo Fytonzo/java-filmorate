@@ -1,8 +1,12 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Description;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -17,17 +21,24 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmControllerTest {
     private FilmController controller;
-
-    public FilmControllerTest() {
-    }
+    @Autowired
+    private FilmService filmService;
+    @Autowired
+    @Qualifier("filmMemoryStorage")
+    private FilmStorage filmStorage;
+    @Autowired
+    @Qualifier ("userMemoryStorage")
+    private UserStorage userStorage;
 
     @BeforeEach
     public void setUp() {
-        FilmStorage inMemoryFilmStorage = new InMemoryFilmStorage();
-        UserStorage inMemoryUserStorage = new InMemoryUserStorage();
-        FilmService filmService = new FilmService(inMemoryFilmStorage, inMemoryUserStorage);
+        this.userStorage = new InMemoryUserStorage();
+        this.filmStorage = new InMemoryFilmStorage();
+        this.filmService = new FilmService(filmStorage, userStorage);
         this.controller = new FilmController(filmService);
     }
 

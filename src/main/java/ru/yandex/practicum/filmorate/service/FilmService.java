@@ -18,7 +18,7 @@ import java.util.List;
 public class FilmService {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
-    private static final LocalDate FILMSTARTDATE = LocalDate.of(1895, 12, 28);
+    private static final LocalDate FILM_STARTDATE = LocalDate.of(1895, 12, 28);
 
     @Autowired
     public FilmService(@Qualifier("filmDBStorage") FilmStorage filmStorage,
@@ -45,7 +45,7 @@ public class FilmService {
     }
 
     public Film addFilm(Film film) {
-        if (film.getReleaseDate().isBefore(FILMSTARTDATE)) {
+        if (film.getReleaseDate().isBefore(FILM_STARTDATE)) {
             log.info("Не пройдена валидация даты выпуска фильма. Так рано фильмы не снимали!");
             throw new ValidationException("Так рано фильмы не снимали!");
         } else {
@@ -59,9 +59,14 @@ public class FilmService {
         return filmStorage.updateFilm(film);
     }
 
-    public Film getFilm(Integer id) throws SQLException {
+    public Film getFilm(Integer id) {
         filmStorage.checkFilmInDb(id);
-        return filmStorage.getFilm(id);
+        try {
+            return filmStorage.getFilm(id);
+        } catch (SQLException e) {
+            log.error("Ошибка в сервисном методе получения фильма по id: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     public List<Film> getPopularFilms(Integer count) {

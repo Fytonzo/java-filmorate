@@ -13,12 +13,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -28,7 +28,7 @@ public class UserDbStorageTest {
     private UserDbStorage userDbStorage;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         this.userDbStorage = new UserDbStorage(jdbcTemplate);
     }
 
@@ -38,13 +38,13 @@ public class UserDbStorageTest {
     @Tag("insert")
     @Tag("select")
     @Tag("adduser")
-    public void getUsers() throws SQLException {
+    public void getUsers() {
         User user1 = new User("email@email.com", "login1", "name1",
                 LocalDate.of(1980, 1, 1));
-        /*User user2 = new User("emailemail@email1.com", "login2", "name2",
-                LocalDate.of(1985, 1, 1));*/
+        User user2 = new User("emailemail@email1.com", "login2", "name2",
+                LocalDate.of(1985, 1, 1));
         userDbStorage.addUser(user1);
-        /*userDbStorage.addUser(user2);*/
+        userDbStorage.addUser(user2);
         List<User> users = userDbStorage.getUsers();
         assertNotNull(users, "Вместо списка пользователей вернулся null");
     }
@@ -56,11 +56,11 @@ public class UserDbStorageTest {
     @Tag("select")
     @Tag("adduser")
     @Tag("updateuser")
-    public void updateUser() throws SQLException {
+    public void updateUser() {
         User user1 = new User("email@email.com", "login1", "name1",
                 LocalDate.of(1980, 1, 1));
         userDbStorage.addUser(user1);
-        user1.setId(jdbcTemplate.queryForObject("SELECT id FROM users WHERE name='"+user1.getName()+"'",
+        user1.setId(jdbcTemplate.queryForObject("SELECT id FROM users WHERE name='" + user1.getName() + "'",
                 Integer.class));
         user1.setLogin("loginbobin");
         userDbStorage.updateUser(user1);
@@ -75,11 +75,11 @@ public class UserDbStorageTest {
     @Tag("insert")
     @Tag("select")
     @Tag("adduser")
-    public void getUser() throws SQLException {
+    public void getUser() {
         User user1 = new User("email@email.com", "login1", "name1",
                 LocalDate.of(1980, 1, 1));
         userDbStorage.addUser(user1);
-        user1.setId(jdbcTemplate.queryForObject("SELECT id FROM users WHERE name='"+user1.getName()+"'",
+        user1.setId(jdbcTemplate.queryForObject("SELECT id FROM users WHERE name='" + user1.getName() + "'",
                 Integer.class));
         User savedUser = userDbStorage.getUser(user1.getId());
         assertNotNull(savedUser, "вместо пользователя вернулся null");
@@ -95,16 +95,16 @@ public class UserDbStorageTest {
     @Tag("adduser")
     @Tag("addfriend")
     @Tag("removefriend")
-    public void removeFriend() throws SQLException {
+    public void removeFriend() {
         User user1 = new User("email@email.com", "login1", "name1",
                 LocalDate.of(1980, 1, 1));
         User user2 = new User("emailemail@email1.com", "login2", "name2",
                 LocalDate.of(1985, 1, 1));
         userDbStorage.addUser(user1);
         userDbStorage.addUser(user2);
-        user1.setId(jdbcTemplate.queryForObject("SELECT id FROM users WHERE name='"+user1.getName()+"'",
+        user1.setId(jdbcTemplate.queryForObject("SELECT id FROM users WHERE name='" + user1.getName() + "'",
                 Integer.class));
-        user2.setId(jdbcTemplate.queryForObject("SELECT id FROM users WHERE name='"+user2.getName()+"'",
+        user2.setId(jdbcTemplate.queryForObject("SELECT id FROM users WHERE name='" + user2.getName() + "'",
                 Integer.class));
         userDbStorage.addFriend(user1.getId(), user2.getId());
         List<User> userFriends = userDbStorage.getUserFriends(user1.getId());
@@ -124,16 +124,16 @@ public class UserDbStorageTest {
     @Tag("select")
     @Tag("adduser")
     @Tag("addfriend")
-    public void getUserFriends() throws SQLException {
+    public void getUserFriends() {
         User user1 = new User("email@email.com", "login1", "name1",
                 LocalDate.of(1980, 1, 1));
         User user2 = new User("emailemail@email1.com", "login2", "name2",
                 LocalDate.of(1985, 1, 1));
         userDbStorage.addUser(user1);
         userDbStorage.addUser(user2);
-        user1.setId(jdbcTemplate.queryForObject("SELECT id FROM users WHERE name='"+user1.getName()+"'",
+        user1.setId(jdbcTemplate.queryForObject("SELECT id FROM users WHERE name='" + user1.getName() + "'",
                 Integer.class));
-        user2.setId(jdbcTemplate.queryForObject("SELECT id FROM users WHERE name='"+user2.getName()+"'",
+        user2.setId(jdbcTemplate.queryForObject("SELECT id FROM users WHERE name='" + user2.getName() + "'",
                 Integer.class));
         userDbStorage.addFriend(user1.getId(), user2.getId());
         List<User> userFriends = userDbStorage.getUserFriends(user1.getId());

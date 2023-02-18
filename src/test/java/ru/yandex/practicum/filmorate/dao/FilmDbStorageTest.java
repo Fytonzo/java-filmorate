@@ -35,10 +35,11 @@ public class FilmDbStorageTest {
     private UserDbStorage userDbStorage;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         this.userDbStorage = new UserDbStorage(jdbcTemplate);
         this.filmDbStorage = new FilmDbStorage(jdbcTemplate);
     }
+
     @Test
     @Sql({"classpath:db/schema.sql", "classpath:db/data.sql"})
     @Description("Добавление/получение фильмов")

@@ -31,7 +31,7 @@ class FilmControllerTest {
     @Qualifier("filmMemoryStorage")
     private FilmStorage filmStorage;
     @Autowired
-    @Qualifier ("userMemoryStorage")
+    @Qualifier("userMemoryStorage")
     private UserStorage userStorage;
 
     @BeforeEach

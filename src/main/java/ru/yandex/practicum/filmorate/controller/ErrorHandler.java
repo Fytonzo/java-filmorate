@@ -14,21 +14,21 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(final ValidationException e){
+    public ErrorResponse handleValidationException(final ValidationException e) {
         log.error("Возникла ошибка валидации \"%s\".", e.getMessage());
         return new ErrorResponse(String.format("Возникла ошибка валидации \"%s\".", e.getMessage()));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleEntityNotFoundException(final EntityNotFoundException e){
+    public ErrorResponse handleEntityNotFoundException(final EntityNotFoundException e) {
         log.error("Возникла ошибка поиска сущности: \"%s\".", e.getMessage());
         return new ErrorResponse(String.format("Возникла ошибка поиска пользователя: \"%s\".", e.getMessage()));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleThrowable(final Throwable e){
+    public ErrorResponse handleThrowable(final Throwable e) {
         log.error("Произошла непредвиденная ошибка");
         return new ErrorResponse("Произошла непредвиденная ошибка");
     }

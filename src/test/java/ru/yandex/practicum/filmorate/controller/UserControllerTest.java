@@ -27,7 +27,7 @@ class UserControllerTest {
     @Autowired
     private UserService userService;
     @Autowired
-    @Qualifier ("userMemoryStorage")
+    @Qualifier("userMemoryStorage")
     private UserStorage userStorage;
 
     @BeforeEach

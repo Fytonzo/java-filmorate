@@ -1,8 +1,12 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Description;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -15,14 +19,21 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@SpringBootTest
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserControllerTest {
 
     private UserController controller;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    @Qualifier("userMemoryStorage")
+    private UserStorage userStorage;
 
     @BeforeEach
     public void setUp() {
-        UserStorage inMemoryUserStorage = new InMemoryUserStorage();
-        UserService userService = new UserService(inMemoryUserStorage);
+        this.userStorage = new InMemoryUserStorage();
+        this.userService = new UserService(userStorage);
         this.controller = new UserController(userService);
     }
 
@@ -50,9 +61,9 @@ class UserControllerTest {
         User user = new User("email@email.com", "login1", "",
                 LocalDate.of(1980, 1, 1));
         controller.addUser(user);
-        List<User> savedUsers = controller.getUsers();
-        assertNotNull(savedUsers, "Вместо списка пользователей вернулся null");
-        assertEquals(savedUsers.get(0).getName(), savedUsers.get(0).getLogin(),
+        User savedUser = controller.getUser(user.getId());
+        assertNotNull(savedUser, "Вместо пользователя вернулся null");
+        assertEquals(savedUser.getName(), savedUser.getLogin(),
                 "Не сработал механизм подстановки логина вместо пустого имени");
     }
 

@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -37,15 +37,16 @@ public class User {
         this.friends = friends;
     }
 
-    public void addFriend(Integer userId){
+    public void addFriend(Integer userId) {
         friends.add(userId);
     }
 
-    public void removeFriend(Integer userId){
-        if(friends.contains(userId)){
+    public void removeFriend(Integer userId) {
+        if (friends.contains(userId)) {
             friends.remove(userId);
-        }else{
-            throw new UserNotFoundException("Пользователя "+userId+" нет в друзьях у пользователя "+this.id+"!");
+        } else {
+            throw new EntityNotFoundException("Пользователя " + userId + " " +
+                    "нет в друзьях у пользователя " + this.id + "!");
         }
     }
 }

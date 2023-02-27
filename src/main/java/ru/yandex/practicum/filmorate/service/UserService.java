@@ -1,73 +1,84 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Set;
 
+@Slf4j
 @Service
 public class UserService {
-    private final UserStorage inMemoryUserStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage inMemoryUserStorage){
-        this.inMemoryUserStorage = inMemoryUserStorage;
+    public UserService(@Qualifier("userDBStorage") UserStorage userStorage) {
+        this.userStorage = userStorage;
     }
 
 
-    public void addFriend(Integer userId1, Integer userId2){
-        User user1 = inMemoryUserStorage.getUser(userId1);
-        User user2 = inMemoryUserStorage.getUser(userId2);
-        user1.addFriend(userId2);
-        user2.addFriend(userId1);
+    public void addFriend(Integer userId1, Integer userId2) {
+        userStorage.checkUserInDb(userId1);
+        userStorage.checkUserInDb(userId2);
+        userStorage.addFriend(userId1, userId2);
     }
 
-    public void removeFriend(Integer userId1, Integer userId2){
-        User user1 = inMemoryUserStorage.getUser(userId1);
-        User user2 = inMemoryUserStorage.getUser(userId2);
-        user1.removeFriend(userId2);
-        user2.removeFriend(userId1);
+    public void removeFriend(Integer userId1, Integer userId2) {
+        userStorage.removeFriend(userId1, userId2);
     }
 
-    public List<User> getCommonFriend(Integer userId1, Integer userId2){
-        User user1 = inMemoryUserStorage.getUser(userId1);
-        User user2 = inMemoryUserStorage.getUser(userId2);
-        Set<Integer> user1Friends = user1.getFriends();
-        Set<Integer> user2Friends = user2.getFriends();
-        List<User> result = new ArrayList<>();
-        for (Integer i : user1Friends){
-            if (user2Friends.contains(i)){
-                result.add(inMemoryUserStorage.getUser(i));
-            }
+    public List<User> getCommonFriend(Integer userId1, Integer userId2) {
+        try {
+            return userStorage.getCommonFriends(userId1, userId2);
+        } catch (SQLException e) {
+            log.error("Ошибка в сервисном методе получения общих друзей: " + e.getMessage());
+            throw new RuntimeException(e);
         }
-        return result;
     }
 
-    public User getUser(Integer id){
-        return inMemoryUserStorage.getUser(id);
+    public User getUser(Integer id) {
+        userStorage.checkUserInDb(id);
+        try {
+            return userStorage.getUser(id);
+        } catch (SQLException e) {
+            log.error("Ошибка в сервисном методе получения пользователя по id: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
+
     public List<User> getUsers() {
-        return inMemoryUserStorage.getUsers();
+        try {
+            return userStorage.getUsers();
+        } catch (SQLException e) {
+            log.error("Ошибка в сервисном методе получения списка всех пользователей: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     public User addUser(User user) {
-        return inMemoryUserStorage.addUser(user);
+        if ((user.getName() == null) || (user.getName().isBlank())) {
+            log.info("Поле \"Имя\" пустое, ему будет присвоено значение поля \"Логин\"");
+            user.setName(user.getLogin());
+        }
+        return userStorage.addUser(user);
     }
 
     public User updateUser(User user) {
-        return inMemoryUserStorage.updateUser(user);
+        userStorage.checkUserInDb(user.getId());
+        return userStorage.updateUser(user);
     }
 
     public List<User> getUserFriends(Integer id) {
-        User user = inMemoryUserStorage.getUser(id);
-        List<User> userFriends = new ArrayList<>();
-        for (Integer userId : user.getFriends()){
-            userFriends.add(inMemoryUserStorage.getUser(userId));
+        userStorage.checkUserInDb(id);
+        try {
+            return userStorage.getUserFriends(id);
+        } catch (SQLException e) {
+            log.error("Ошибка в сервисном методе получения друзей пользователя по id: " + e.getMessage());
+            throw new RuntimeException(e);
         }
-        return userFriends;
     }
 }
